@@ -6,6 +6,7 @@ from typing import Final
 import faiss
 import pandas as pd
 import streamlit as st
+import st_click_detector
 
 from pipeline import clip_wrapper
 
@@ -23,7 +24,11 @@ class SemanticSearcher:
         v = self.embedder([query]).detach().numpy()
         _, I = self.index.search(v, 10)
         return [
-            SearchResult(id=row["id"], second=row["second"])
+            SearchResult(
+                video_id=row["video_id"],
+                frame_idx=row["frame_idx"],
+                timestamp=row["timestamp"]
+            )
             for _, row in self.metadata.iloc[I[0]].iterrows()
         ]
 
@@ -34,8 +39,9 @@ SEARCHER: Final[SemanticSearcher] = SemanticSearcher(pd.read_parquet(DATASET_PAT
 
 @dataclass
 class SearchResult:
-    id: str
-    second: int
+    video_id: str
+    frame_idx: int
+    timestamp: float
 
 
 def get_video_url(video_id: str) -> str:
@@ -48,7 +54,7 @@ def display_search_results(results: list[SearchResult]) -> None:
     col_num = 0  # Counter to keep track of the current column
     row = st.empty()  # Placeholder for the current row
 
-    for result in results:
+    for i, result in enumerate(results):
         if col_num == 0:
             row = st.columns(col_count)  # Create a new row of columns
 
@@ -78,12 +84,24 @@ def display_search_results(results: list[SearchResult]) -> None:
                 unsafe_allow_html=True,
             )
 
-            # Display the embedded YouTube video
-            st.video(get_video_url(result.id), start_time=result.second)
+            key = f"{result.video_id}-{result.frame_idx}-{i}"
+            if key not in st.session_state:
+                st_click_detector.click_detector(
+                    f"""
+                    <img src="https://img.youtube.com/vi/9Xy-LMAfglE/2.jpg" alt="Video Thumbnail" style="width:100%" id={key}>
+                    """,
+                    key=key
+                )
+
+            if st.session_state[key]:
+                # Display the embedded YouTube video
+                st.video(get_video_url(result.video_id), start_time=result.timestamp)
 
         col_num += 1
         if col_num >= col_count:
             col_num = 0
+
+    st.write(st.session_state)
 
 
 def main():
