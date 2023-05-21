@@ -1,4 +1,4 @@
-from pipeline.videos import get_id
+from pipeline.download_videos import get_id
 
 
 def test_get_id():

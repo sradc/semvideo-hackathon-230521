@@ -17,6 +17,8 @@ transformers = "^4.29.2"
 torch = "^2.0.1"
 torchvision = "^0.15.2"
 urllib3 = "1.26.15"
+yt-dlp = "^2023.3.4"
+tqdm = "^4.65.0"
 
 [tool.poetry.group.dev.dependencies]
 notebook = "^6.5.4"
