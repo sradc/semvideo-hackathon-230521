@@ -113,7 +113,7 @@ def download_videos(video_ids: List[str]) -> None:
             print(f"Skipping {video_path} because it already exists")
             continue
         subprocess.run(
-            ["yt-dlp", "--quiet", "-f", "133", "-o", str(video_path), video_url]
+            ["yt-dlp", "--quiet", "-f", "135", "-o", str(video_path), video_url]
         )
 
 
