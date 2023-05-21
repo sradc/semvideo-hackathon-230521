@@ -4,6 +4,8 @@ import torch
 from PIL import Image
 from transformers import CLIPModel, CLIPProcessor
 
+MODEL_DIM = 512
+
 
 class ClipWrapper:
     def __init__(self):
