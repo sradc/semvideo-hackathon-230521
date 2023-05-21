@@ -22,7 +22,7 @@ def get_id(url: str) -> str:
 
 
 def download_videos(video_urls: List[str]) -> None:
-    VIDEO_DIR.mkdir(exist_ok=True)
+    VIDEO_DIR.mkdir(exist_ok=True, parents=True)
     for video_url in tqdm(video_urls):
         video_id = get_id(video_url)
         video_path = VIDEO_DIR / f"{video_id}.mp4"
