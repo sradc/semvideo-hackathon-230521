@@ -19,6 +19,9 @@ def process_videos() -> None:
         video_id = video_path.stem
         extracted_images_dir = IMAGES_DIR / video_id
         extracted_images_dir.mkdir(exist_ok=True, parents=True)
+        complete_file = extracted_images_dir / "complete"
+        if complete_file.exists():
+            continue
         for clip_vector, image, timestamp_secs, frame_idx in get_clip_vectors(
             video_path, clip_wrapper
         ):
@@ -33,6 +36,7 @@ def process_videos() -> None:
                     *clip_vector,
                 ]
             )
+        complete_file.touch()
     df = pd.DataFrame(
         results,
         columns=["video_id", "frame_idx", "timestamp", "image_path"]
