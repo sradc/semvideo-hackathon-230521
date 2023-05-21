@@ -1,3 +1,4 @@
+import logging
 import os
 import hashlib
 from pathlib import Path
@@ -5,7 +6,13 @@ from typing import Final, Optional
 
 import youtube_dl
 
-PLAYLIST_URL: Final[Optional[str]] = os.environ.get("PLAYLIST_URL")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+URL_FILE: Final[Optional[str]] = os.environ.get("URL_FILE")
 OUTPUT_DIR: Final[str] = os.environ.get("OUTPUT_DIR", "data/url")
 
 
@@ -35,9 +42,9 @@ def get_all_video_ids(channel_url: str) -> list[str]:
     return video_ids
 
 
-def main():
-    assert PLAYLIST_URL is not None, "PLAYLIST_URL environment variable not set"
-    ids = get_all_video_ids(PLAYLIST_URL)
+def process_youtube_url(url: str):
+    logging.info(f"Processing {url}")
+    ids = get_all_video_ids(url)
 
     output_dir = Path(OUTPUT_DIR)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -47,8 +54,20 @@ def main():
             for video_id in ids
         )
     output_path = output_dir / f"{hashlib.md5(output.encode()).hexdigest()}.txt"
+    logging.info(f"Writing {len(ids)} video IDs to {output_path}")
     with output_path.open(mode="w") as f:
         f.write(output)
+
+
+def main():
+    assert URL_FILE is not None, "URL_FILE environment variable must be set."
+    with open(URL_FILE, "r") as f:
+        logging.info(f"Reading URLs from {URL_FILE}")
+        urls = f.readlines()
+
+    logging.info(f"Processing {len(urls)} URLs")
+    for url in urls:
+        process_youtube_url(url)
 
 
 if __name__ == "__main__":
