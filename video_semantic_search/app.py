@@ -17,14 +17,21 @@ class SemanticSearcher:
         self.embedder = clip_wrapper.ClipWrapper().texts2vec
         self.metadata = dataset.drop(columns=dim_columns)
         self.index = faiss.IndexFlatIP(len(dim_columns))
-        self.index.add(dataset[dim_columns].to_numpy(np.float32))
+        self.index.add(
+            np.ascontiguousarray(dataset[dim_columns].to_numpy(np.float32))
+        )
 
     def search(self, query: str) -> list["SearchResult"]:
         v = self.embedder([query]).detach().numpy()
-        _, I = self.index.search(v, 10)
+        D, I = self.index.search(v, 10)
         return [
-            SearchResult(id=row["id"], second=row["second"])
-            for _, row in self.metadata.iloc[I[0]].iterrows()
+            SearchResult(
+                video_id=row["video_id"],
+                frame_idx=row["frame_idx"],
+                timestamp=row["timestamp"],
+                score=score,
+            )
+            for score, (_, row) in zip(D[0], self.metadata.iloc[I[0]].iterrows())
         ]
 
 
@@ -34,8 +41,10 @@ SEARCHER: Final[SemanticSearcher] = SemanticSearcher(pd.read_parquet(DATASET_PAT
 
 @dataclass
 class SearchResult:
-    id: str
-    second: int
+    video_id: str
+    frame_idx: int
+    timestamp: float
+    score: float
 
 
 def get_video_url(video_id: str) -> str:
@@ -48,7 +57,7 @@ def display_search_results(results: list[SearchResult]) -> None:
     col_num = 0  # Counter to keep track of the current column
     row = st.empty()  # Placeholder for the current row
 
-    for result in results:
+    for i, result in enumerate(results):
         if col_num == 0:
             row = st.columns(col_count)  # Create a new row of columns
 
@@ -79,7 +88,8 @@ def display_search_results(results: list[SearchResult]) -> None:
             )
 
             # Display the embedded YouTube video
-            st.video(get_video_url(result.id), start_time=result.second)
+            # st.video(get_video_url(result.video_id), start_time=int(result.timestamp))
+            st.image(f"data/images/{result.video_id}/{result.frame_idx}.jpg")
 
         col_num += 1
         if col_num >= col_count:
