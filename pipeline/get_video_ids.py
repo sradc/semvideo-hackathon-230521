@@ -26,7 +26,7 @@ PLAYLIST_URLS = [
     "https://www.youtube.com/playlist?list=PLCQCtoOJpI_A5oktQImEdDBJ50BqHXujj",  # 495, MTV Classic 2000's music videos (US Version)
 ]
 URL_FILE: Final[Optional[str]] = os.environ.get("URL_FILE")
-OUTPUT_DIR: Final[str] = os.environ.get("OUTPUT_DIR", "data/url")
+OUTPUT_DIR: Final[str] = os.environ.get("OUTPUT_DIR", "data/ids")
 
 
 def get_all_video_ids(channel_url: str) -> list[str]:
@@ -62,9 +62,7 @@ def process_youtube_url(url: str):
     output_dir = Path(OUTPUT_DIR)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output = "\n".join(
-        f"https://www.youtube.com/watch?v={video_id}" for video_id in ids
-    )
+    output = "\n".join(ids)
     output_path = output_dir / f"{hashlib.md5(output.encode()).hexdigest()}.txt"
     logging.info(f"Writing {len(ids)} video IDs to {output_path}")
     with output_path.open(mode="w") as f:
