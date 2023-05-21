@@ -12,7 +12,7 @@ VIDEO_URLS = [
     "https://www.youtube.com/watch?v=1wkPMUZ9vX4",  # "Nature Makes You Happy | BBC Earth"
     "https://www.youtube.com/watch?v=dGghkjpNCQ8",  # "Calvin Harris - Feel So Close (Official Video)"
     "https://www.youtube.com/watch?v=p9_BsjMi4bM",  # "Nothing But Thieves - Sorry (Official Video)"
-    "https://www.youtube.com/watch?v=a0q6JMuLBYQ",  #  "Conan Gray - Never Ending Song (Official Music Video)"
+    "https://www.youtube.com/watch?v=a0q6JMuLBYQ",  # "Conan Gray - Never Ending Song (Official Music Video)"
 ]  # hardcode for POC
 
 
