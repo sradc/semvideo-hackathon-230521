@@ -5,9 +5,15 @@ from typing import List
 
 from tqdm import tqdm
 
-VIDEO_DIR = Path("videos")
+REPO_ROOT = Path(__file__).parents[1].resolve()
+DATA_DIR = REPO_ROOT / "data"
+VIDEO_DIR = DATA_DIR / "videos"
 VIDEO_URLS = [
-    "https://www.youtube.com/watch?v=frYIj2FGmMA"  # buster keaton stunts
+    "https://www.youtube.com/watch?v=frYIj2FGmMA",  # "Some of Buster Keaton's most amazing stunts"
+    "https://www.youtube.com/watch?v=1wkPMUZ9vX4",  # "Nature Makes You Happy | BBC Earth"
+    "https://www.youtube.com/watch?v=dGghkjpNCQ8",  # "Calvin Harris - Feel So Close (Official Video)"
+    "https://www.youtube.com/watch?v=p9_BsjMi4bM",  # "Nothing But Thieves - Sorry (Official Video)"
+    "https://www.youtube.com/watch?v=a0q6JMuLBYQ",  # "Conan Gray - Never Ending Song (Official Music Video)"
 ]  # hardcode for POC
 
 
@@ -16,8 +22,7 @@ def get_id(url: str) -> str:
 
 
 def download_videos(video_urls: List[str]) -> None:
-    VIDEO_DIR.mkdir(exist_ok=True)
-    (VIDEO_DIR / ".gitignore").write_text("**")
+    VIDEO_DIR.mkdir(exist_ok=True, parents=True)
     for video_url in tqdm(video_urls):
         video_id = get_id(video_url)
         video_path = VIDEO_DIR / f"{video_id}.mp4"
@@ -30,6 +35,5 @@ def download_videos(video_urls: List[str]) -> None:
 
 
 if __name__ == "__main__":
-    assert Path("pipeline").exists(), "Run this from the repo root"
     print("Downloading videos...")
     download_videos(VIDEO_URLS)
