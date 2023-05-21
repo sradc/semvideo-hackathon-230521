@@ -5,9 +5,11 @@ from typing import List
 
 from tqdm import tqdm
 
-VIDEO_DIR = Path("videos")
+REPO_ROOT = Path(__file__).parents[1].resolve()
+VIDEO_DIR = REPO_ROOT / "videos"
 VIDEO_URLS = [
-    "https://www.youtube.com/watch?v=frYIj2FGmMA"  # buster keaton stunts
+    "https://www.youtube.com/watch?v=frYIj2FGmMA",  # " Some of Buster Keaton's most amazing stunts"
+    "https://www.youtube.com/watch?v=1wkPMUZ9vX4",  # "Nature Makes You Happy | BBC Earth"
 ]  # hardcode for POC
 
 
@@ -30,6 +32,5 @@ def download_videos(video_urls: List[str]) -> None:
 
 
 if __name__ == "__main__":
-    assert Path("pipeline").exists(), "Run this from the repo root"
     print("Downloading videos...")
     download_videos(VIDEO_URLS)
