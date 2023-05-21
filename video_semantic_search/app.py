@@ -7,19 +7,20 @@ import faiss
 import pandas as pd
 import streamlit as st
 
+from pipeline import clip_wrapper
+
 
 class SemanticSearcher:
     def __init__(self, dataset: pd.DataFrame):
         dim_columns = dataset.filter(regex="^dim_").columns
 
+        self.embedder = clip_wrapper.ClipWrapper().texts2vec
         self.metadata = dataset.drop(columns=dim_columns)
-        self.index = faiss.IndexFlatL2(len(dim_columns))
+        self.index = faiss.IndexFlatIP(len(dim_columns))
         self.index.add(dataset[dim_columns].to_numpy(np.float32))
-        # TODO: self.embedder = load_embedder()
-        self.embedder = lambda _: np.random.rand(1, len(dim_columns))
 
     def search(self, query: str) -> list["SearchResult"]:
-        v = self.embedder(query)
+        v = self.embedder([query]).detach().numpy()
         _, I = self.index.search(v, 10)
         return [
             SearchResult(id=row["id"], second=row["second"])
