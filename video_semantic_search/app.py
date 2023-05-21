@@ -1,9 +1,10 @@
-import numpy as np
+import base64
 import os
 from dataclasses import dataclass
 from typing import Final
 
 import faiss
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -47,8 +48,8 @@ class SearchResult:
     score: float
 
 
-def get_video_url(video_id: str) -> str:
-    return f"https://www.youtube.com/watch?v={video_id}"
+def get_video_url(video_id: str, timestamp: float) -> str:
+    return f"https://www.youtube.com/watch?v={video_id}&t={int(timestamp)}"
 
 
 def display_search_results(results: list[SearchResult]) -> None:
@@ -89,7 +90,18 @@ def display_search_results(results: list[SearchResult]) -> None:
 
             # Display the embedded YouTube video
             # st.video(get_video_url(result.video_id), start_time=int(result.timestamp))
-            st.image(f"data/images/{result.video_id}/{result.frame_idx}.jpg")
+            # st.image(f"data/images/{result.video_id}/{result.frame_idx}.jpg")
+            with open(f"data/images/{result.video_id}/{result.frame_idx}.jpg", "rb") as f:
+                image = f.read()
+                encoded = base64.b64encode(image).decode()
+            st.markdown(
+                f"""
+                <a href="{get_video_url(result.video_id, result.timestamp)}">
+                <img src="data:image/jpeg;base64,{encoded}" alt="frame {result.frame_idx}" width="100%">
+                </a>
+                """,
+                unsafe_allow_html=True,
+            )
 
         col_num += 1
         if col_num >= col_count:
