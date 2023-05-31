@@ -11,6 +11,8 @@ pinned: false
 
 # semvideo-hackathon-230521
 
+![demo-0](https://raw.githubusercontent.com/sradc/semvideo-hackathon-230521/main/article/demo-0.gif)
+
 ## Project Description
 
 This project let's you search YouTube videos using a text string. The search is done over the actual video frames,
